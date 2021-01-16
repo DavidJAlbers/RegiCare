@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import useRegistry from '../hooks/Registry'
+import useRegistryInfo from '../hooks/RegistryInfo'
 
 
 /**
@@ -58,7 +58,7 @@ interface GreeterProps {
  * @param props
  */
 export const ContactAdmin = ({ uppercase = false }) => {
-    const { admin } = useRegistry()
+    const { admin } = useRegistryInfo()
     const contact = uppercase ? 'Contact' : 'contact'
     return (
         <>

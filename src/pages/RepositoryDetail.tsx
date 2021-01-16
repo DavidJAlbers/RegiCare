@@ -2,7 +2,7 @@ import React from 'react'
 import CopyableCommand from '../components/CopyableCommand'
 import Header from '../components/Header'
 import Repository from '../data/Repository'
-import useRegistry from '../hooks/Registry'
+import useRegistryInfo from '../hooks/RegistryInfo'
 
 interface RepositoryProps {
     repository: Repository
@@ -13,7 +13,7 @@ interface RepositoryProps {
  * @param props
  */
 export default function RepositoryDetail({ repository }: RepositoryProps) {
-    const { registry } = useRegistry()
+    const { registryDomain: registry } = useRegistryInfo()
     return (
         <div className="container">
             <Header subtitle="Repository" title={repository.name} />

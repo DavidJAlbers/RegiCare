@@ -4,5 +4,6 @@
 export default interface Repository {
     name: string,
     tags: string[],
-    modified: string
+    modified: string,
+    architecture: string
 }

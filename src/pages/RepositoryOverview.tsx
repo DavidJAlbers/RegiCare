@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import { useProduct } from '../hooks/Product'
 import Header from '../components/Header'
 import Repository from '../data/Repository'
-import useRegistry from '../hooks/Registry'
+import useRegistryInfo from '../hooks/RegistryInfo'
 
 interface TagListProps {
     tags: Array<string>
@@ -19,22 +19,31 @@ interface TagListProps {
  */
 // TODO Special case for exactly 2 tags
 function TagList({ tags }: TagListProps) {
-    if (tags.length === 1) {
+    if (tags.length === 0) {
         return (
-            <span><code>{tags[0]}</code></span>
+            <>none available</>
+        )
+    }
+    else if (tags.length === 1) {
+        return (
+            <>
+                <code>{tags[0]}</code>
+            </>
         )
     } else if (tags.length === 2) {
         return (
-            <span><code>{tags[0]}</code>, <code>{tags[1]}</code></span>
+            <>
+                <code>{tags[0]}</code>, <code>{tags[1]}</code>
+            </>
         )
     } else {
         return (
-            <span>
+            <>
                 {tags.slice(0, 2).map((tag) => (
                     <span key={tag}><code>{tag}</code>, </span>
                 ))}
                 ... (total {tags.length})
-            </span>
+            </>
         )
     }
 }
@@ -50,7 +59,7 @@ interface RepositoryOverviewProps {
  */
 // TODO Support pagination
 export default function RepositoryOverview({ repositories, isLoading }: RepositoryOverviewProps) {
-    const { registry } = useRegistry()
+    const { registryDomain: registry } = useRegistryInfo()
     const { title: product } = useProduct()
     const history = useHistory()
 
@@ -67,7 +76,8 @@ export default function RepositoryOverview({ repositories, isLoading }: Reposito
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Last modification</th>
+                            <th>Architecture</th>
+                            <th>Last update</th>
                             <th>Available tags</th>
                         </tr>
                     </thead>
@@ -76,6 +86,7 @@ export default function RepositoryOverview({ repositories, isLoading }: Reposito
                             // The History API is needed in order to make React Router work together with clickable <tr>s, as usual <Link>s do not work here.
                             <tr key={repo.name} style={{cursor: "pointer"}} onClick={() => history.push(repo.name)}>
                                 <td>{repo.name}</td>
+                                <td>{repo.architecture}</td>
                                 <td>{new Date(Date.parse(repo.modified)).toLocaleString()}</td>
                                 <td><TagList tags={repo.tags} /></td>
                             </tr>

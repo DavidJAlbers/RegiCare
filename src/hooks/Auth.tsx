@@ -3,21 +3,25 @@
  */
 
 import React, { useCallback, useState, useContext, ReactNode } from 'react'
-import useRegistry from './Registry'
+import useRegistryInfo from './RegistryInfo'
 
-const AuthContext = React.createContext<{
+interface AuthContextValue {
     user?: string,
     authString?: string,
     login: (user: string, password: string) => Promise<LoginResult>,
     logout: () => void
-}>({
+}
+
+const initialContextValue: AuthContextValue = {
     user: undefined, 
     authString: undefined, 
     login: (user: string, password: string) => {
         return Promise.resolve({ success: false, error: 'auth_service_unavailable' })
     }, 
     logout: () => {}
-})
+}
+
+const AuthContext = React.createContext<AuthContextValue>(initialContextValue)
 
 /**
  * Possible results for calling the login function on the useAuth() hook.
@@ -46,6 +50,8 @@ export type LoginResult = {
  * 
  * The `login()` function is slightly more complex. It issues an API call to the registry's endpoint to verify the userdata's correctness.
  * Depending on the response of the API, different types of `LoginResult`s are returned.
+ * 
+ * This hook must only be used within an <AuthProvider />, as it is backed by a React context!
  */
 export default function useAuth() {
     return useContext(AuthContext)
@@ -53,7 +59,7 @@ export default function useAuth() {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 
-    const { registry } = useRegistry()
+    const { registryDomain: registry } = useRegistryInfo()
 
     const [ user, setUser ] = useState<string|undefined>(undefined)
     const [ authString, setAuthString ] = useState<string|undefined>(undefined)
@@ -76,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch {
             return { success: false, error: 'registry_unreachable' }
         }
-    },[registry])
+    }, [registry])
 
     const logout = useCallback(() => {
         setUser(undefined)

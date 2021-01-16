@@ -1,7 +1,7 @@
 import React, { SyntheticEvent, useState } from 'react'
 import { Card, Container, Form, Button, Alert, Spinner, Col, Row } from 'react-bootstrap'
 import useAuth, { LoginResult } from '../hooks/Auth'
-import useRegistry from '../hooks/Registry'
+import useRegistryInfo from '../hooks/RegistryInfo'
 import { ContactAdmin } from './Util' 
 
 const RegistryUnavailable = () => {
@@ -32,6 +32,7 @@ const LoginFailure = ({ result }: LoginFailureProps) => {
             <Alert.Heading>Authentication failed</Alert.Heading>
             {result.error === 'invalid_auth_credentials' && <InvalidCredentials />}
             {result.error === 'registry_unreachable' && <RegistryUnavailable />}
+            {result.error === 'auth_service_unavailable' && <>AUTH_SERVICE_UNAVAILABLE</>}
             {result.error === 'unknown_error' && <>UNKNOWN_REQUEST_ERROR</>}
         </Alert>
     )
@@ -51,7 +52,7 @@ export function LoginInfo() {
 }
 
 export default function Login() {
-    const { registry } = useRegistry()
+    const { registryDomain: registry } = useRegistryInfo()
     const { login } = useAuth()
 
     const [loginResult, setLoginResult] = useState<LoginResult|null>(null)
