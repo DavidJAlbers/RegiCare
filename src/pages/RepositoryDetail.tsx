@@ -1,10 +1,10 @@
 import React from 'react'
-import CopyableCommand from './CopyableCommand'
-import Header from './Header'
+import CopyableCommand from '../components/CopyableCommand'
+import Header from '../components/Header'
 import Repository from '../data/Repository'
+import useRegistry from '../hooks/Registry'
 
 interface RepositoryProps {
-    registry: string,
     repository: Repository
 }
 
@@ -12,7 +12,8 @@ interface RepositoryProps {
  * Returns the view for a single repository, with the option to quickly pull the repository's first tag.
  * @param props
  */
-export default function RepositoryDetail({ registry, repository }: RepositoryProps) {
+export default function RepositoryDetail({ repository }: RepositoryProps) {
+    const { registry } = useRegistry()
     return (
         <div className="container">
             <Header subtitle="Repository" title={repository.name} />

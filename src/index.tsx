@@ -1,14 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './components/App';
-import AuthProvider from './contexts/AuthProvider';
-
-// TODO Think of a proper source to get these from
-const registry = "registry.davidjalbers.de"
-const admin = "mailto:x@y.com"
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './components/App'
+import { AuthProvider } from './hooks/Auth'
+import ProductProvider from './hooks/Product'
 
 ReactDOM.render((
-    <AuthProvider registry={registry}>
-        <App registry={registry} admin={admin} />
-    </AuthProvider>
-),document.getElementById('root'));
+    <ProductProvider>
+        <AuthProvider>
+            <App />
+        </AuthProvider>
+    </ProductProvider>
+),document.getElementById('root'))

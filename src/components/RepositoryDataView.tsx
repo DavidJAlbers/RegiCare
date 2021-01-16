@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Route } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthProvider'
-import RepositoryOverview from './RepositoryOverview'
-import RepositoryDetail from './RepositoryDetail'
-
-interface RepositoryDataViewProps {
-    registry: string,
-    admin: string
-}
+import useAuth from '../hooks/Auth'
+import RepositoryOverview from '../pages/RepositoryOverview'
+import RepositoryDetail from '../pages/RepositoryDetail'
+import useRegistry from '../hooks/Registry'
 
 interface CatalogDataResponse {
     repositories: Array<string>,
@@ -22,7 +18,9 @@ interface TagListDataResponse {
  * A wrapper around components that need to poll the Docker registry HTTP API.
  * @param props
  */
-export default function RepositoryDataView({ registry, admin }: RepositoryDataViewProps) {
+export default function RepositoryDataView() {
+
+    const { registry } = useRegistry()
 
     const [ repositories, setRepositories ] = useState<Array<{name: string, tags: Array<string>}>>([])
 
@@ -62,13 +60,13 @@ export default function RepositoryDataView({ registry, admin }: RepositoryDataVi
     return (
         <>
             <Route path="/" exact>
-                <RepositoryOverview registry={registry} repositories={repositories.map(repo => {
+                <RepositoryOverview repositories={repositories.map(repo => {
                     return { ...repo, modified: '2020-12-26 12:34' }
                 })} isLoading={isLoading} />
             </Route>
             {repositories.map(repo => (
                 <Route path={'/' + repo.name} exact>
-                    <RepositoryDetail registry={registry} repository={{ ...repo, modified: '2020-12-27 12:34' }} />
+                    <RepositoryDetail repository={{ ...repo, modified: '2020-12-27 12:34' }} />
                 </Route>
             ))}
         </>

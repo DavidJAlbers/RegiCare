@@ -1,5 +1,5 @@
 import React from 'react'
-import { useProduct } from './ProductProvider'
+import { useProduct } from '../hooks/Product'
 import { OptionalAnchor, Greeter, Clock } from './Util'
 
 /**

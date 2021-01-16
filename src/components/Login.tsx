@@ -1,33 +1,37 @@
 import React, { SyntheticEvent, useState } from 'react'
 import { Card, Container, Form, Button, Alert, Spinner, Col, Row } from 'react-bootstrap'
-import { LoginResult, useAuth } from '../contexts/AuthProvider'
+import useAuth, { LoginResult } from '../hooks/Auth'
+import useRegistry from '../hooks/Registry'
 import { ContactAdmin } from './Util' 
 
-const RegistryUnavailable = ({ admin } : { admin: string }) => (
-    <>
-        The registry seems unavailable at the moment.
-        Come back later or <ContactAdmin admin={admin} /> if the error persists.
-    </>
-)
-const InvalidCredentials = ({ admin } : { admin: string }) => (
-    <>
-        The registry is available, but the authentication credentials you entered seem invalid.
-        Check your spelling or <ContactAdmin admin={admin} /> if you believe this is an error.
-    </>
-)
-
-interface AuthenticationFailureProps {
-    result: LoginResult,
-    admin: string
+const RegistryUnavailable = () => {
+    return (
+        <>
+            The registry seems unavailable at the moment.
+            Come back later or <ContactAdmin /> if the error persists.
+        </>
+    )
+}
+const InvalidCredentials = () => {
+    return (
+        <>
+            The registry is available, but the authentication credentials you entered seem invalid.
+            Check your spelling or <ContactAdmin /> if you believe this is an error.
+        </>
+    )
 }
 
-const LoginFailure = ({ result, admin }: AuthenticationFailureProps) => {
+interface LoginFailureProps {
+    result: LoginResult
+}
+
+const LoginFailure = ({ result }: LoginFailureProps) => {
     if (result.success) return null
     return (
         <Alert variant="danger">
             <Alert.Heading>Authentication failed</Alert.Heading>
-            {result.error === 'invalid_auth_credentials' && <InvalidCredentials admin={admin} />}
-            {result.error === 'registry_unreachable' && <RegistryUnavailable admin={admin} />}
+            {result.error === 'invalid_auth_credentials' && <InvalidCredentials />}
+            {result.error === 'registry_unreachable' && <RegistryUnavailable />}
             {result.error === 'unknown_error' && <>UNKNOWN_REQUEST_ERROR</>}
         </Alert>
     )
@@ -46,12 +50,8 @@ export function LoginInfo() {
     )
 }
 
-interface LoginProps {
-    registry: string,
-    admin: string
-}
-
-export default function Login({ registry, admin }: LoginProps) {
+export default function Login() {
+    const { registry } = useRegistry()
     const { login } = useAuth()
 
     const [loginResult, setLoginResult] = useState<LoginResult|null>(null)
@@ -64,8 +64,11 @@ export default function Login({ registry, admin }: LoginProps) {
             user: { value: string },
             password: { value: string }
         }
-        setLoginResult(await login(target.user.value, target.password.value))
-        setIsLoading(false)
+        const result = await login(target.user.value, target.password.value)
+        if (!result.success) {
+            setLoginResult(result)
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -75,7 +78,7 @@ export default function Login({ registry, admin }: LoginProps) {
                     <Card>
                         <Card.Body>
                             <h1 className="text-center mb-5">Authentication Required</h1>
-                            {loginResult !== null && !loginResult.success && <LoginFailure result={loginResult} admin={admin} /> }
+                            {loginResult !== null && !loginResult.success && <LoginFailure result={loginResult} /> }
                             <p>Provide your authentication credentials in order to access <em>{registry}</em>.</p>
                             <Form onSubmit={attemptLogin}>
                                 <Form.Group className="my-3">
@@ -92,7 +95,7 @@ export default function Login({ registry, admin }: LoginProps) {
                             </Form>
                         </Card.Body>
                     </Card>
-                    <p className="w-100 text-center text-muted mt-2">Need help? <ContactAdmin admin={admin} uppercase />.</p>
+                    <p className="w-100 text-center text-muted mt-2">Need help? <ContactAdmin uppercase />.</p>
                 </Col>
             </Row>
         </Container>

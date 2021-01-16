@@ -18,7 +18,7 @@ export const OptionalAnchor = ({text, href}: OptionalAnchorProps) => (
 
 interface OptionalAnchorProps {
     text: string, 
-    href: string
+    href?: string
 }
 
 /**

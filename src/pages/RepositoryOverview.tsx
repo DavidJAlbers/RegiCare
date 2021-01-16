@@ -1,9 +1,10 @@
 import React from 'react'
 import { Container, Spinner } from 'react-bootstrap'
 import { useHistory } from 'react-router-dom'
-import { useProduct } from '../generic/ProductProvider'
-import Header from './Header'
+import { useProduct } from '../hooks/Product'
+import Header from '../components/Header'
 import Repository from '../data/Repository'
+import useRegistry from '../hooks/Registry'
 
 interface TagListProps {
     tags: Array<string>
@@ -40,7 +41,6 @@ function TagList({ tags }: TagListProps) {
 
 interface RepositoryOverviewProps { 
     repositories: Array<Repository>,
-    registry: string, 
     isLoading: boolean 
 }
 
@@ -49,7 +49,8 @@ interface RepositoryOverviewProps {
  * @param props
  */
 // TODO Support pagination
-export default function RepositoryOverview({ repositories, registry, isLoading }: RepositoryOverviewProps) {
+export default function RepositoryOverview({ repositories, isLoading }: RepositoryOverviewProps) {
+    const { registry } = useRegistry()
     const { title: product } = useProduct()
     const history = useHistory()
 

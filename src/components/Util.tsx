@@ -5,6 +5,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { OptionalAnchor } from '../generic/Util'
+import useRegistry from '../hooks/Registry'
 
 /**
  * Returns the string "contact the registry's administrator".
@@ -14,7 +15,8 @@ import { OptionalAnchor } from '../generic/Util'
  * 
  * @param props
  */
-export const ContactAdmin = ({ uppercase = false, admin = '' }) => {
+export const ContactAdmin = ({ uppercase = false }) => {
+    const { admin } = useRegistry()
     const contact = uppercase ? 'Contact' : 'contact'
     return (
         <>
@@ -27,4 +29,4 @@ export const ContactAdmin = ({ uppercase = false, admin = '' }) => {
  * Returns a paragraph referring to the administrator's contact for support.
  * @param props
  */
-export const Help = ({ admin = '' }) => (<p>To get help, <ContactAdmin admin={admin}/>. <Link to="/">Go back to the index page.</Link></p>)
+export const Help = () => (<p>To get help, <ContactAdmin />. <Link to="/">Go back to the index page.</Link></p>)
