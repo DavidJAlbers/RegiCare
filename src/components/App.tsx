@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-import Footer from '../generic/Footer'
+import Footer from './Footer'
 import RepositoryDataView from './RepositoryDataView'
 import Login, { LoginInfo } from './Login'
 import { Help } from './Util'
