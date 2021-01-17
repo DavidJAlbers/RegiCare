@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { Route } from 'react-router-dom'
 import RepositoryOverview from '../pages/RepositoryOverview'
 import RepositoryDetail from '../pages/RepositoryDetail'
-import { APIResult, useAPI } from '../hooks/RegistryAPI'
+import { useAPIEffect } from '../hooks/RegistryAPI'
 import Repository from '../data/Repository'
 
 /**
@@ -13,8 +13,7 @@ export default function RepositoryDataView() {
 
     const [ repositories, setRepositories ] = useState<Repository[]>([])
 
-    // TODO: Move useCallback() into the useAPI() hook so that the arrow function can be inlined
-    const processRepositoryData = useCallback(async (fetchAPI: (endpoint: string) => Promise<APIResult>) => {
+    const [ isLoading ] = useAPIEffect(async (fetchAPI) => {
 
         const res = await fetchAPI('_catalog')
         if (!res.success) return
@@ -41,9 +40,7 @@ export default function RepositoryDataView() {
         }))
 
         setRepositories(repositoriesWithTagsAndModificationDate)
-    }, [])
-
-    const { isLoading } = useAPI(processRepositoryData)
+    })
 
     return (
         <>

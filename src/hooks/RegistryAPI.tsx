@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import useAuth from "./Auth";
 import useRegistryInfo from "./RegistryInfo";
 
@@ -24,7 +24,7 @@ async function fetchAPI(registryDomain: string, authString: string|undefined, en
     }
 }
 
-export function useAPI(executor: (fetchAPI: (endpoint: string) => Promise<APIResult>) => void) {
+export function useAPI(executor: (fetch: (endpoint: string) => Promise<APIResult>) => void): [ isLoading: boolean, execute: () => void ] {
 
     const { authString } = useAuth()
     const { registryDomain } = useRegistryInfo()
@@ -33,14 +33,17 @@ export function useAPI(executor: (fetchAPI: (endpoint: string) => Promise<APIRes
     // Components may use this in order to display a loading screen instead of an empty data table.
     const [ isLoading, setIsLoading ] = useState(true)
 
-    useEffect(() => {
-        const doIt = async () => {
-            setIsLoading(true)
-            await executor(async (endpoint: string) => await fetchAPI(registryDomain, authString, endpoint))
-            setIsLoading(false)
-        }
-        doIt()
-    }, [authString, registryDomain, executor])
+    const execute = useCallback(async () => {
+        setIsLoading(true)
+        await executor(async (endpoint) => await fetchAPI(registryDomain, authString, endpoint))
+        setIsLoading(false)
+    }, /* eslint-disable react-hooks/exhaustive-deps */ [registryDomain, authString])
 
-    return { isLoading }
+    return [ isLoading, execute ]
+}
+
+export function useAPIEffect(executor: (fetch: (endpoint: string) => Promise<APIResult>) => void): [ boolean ] {
+    const [ isLoading, execute ] = useAPI(executor)
+    useEffect(() => { execute() }, [execute])
+    return [ isLoading ]
 }
